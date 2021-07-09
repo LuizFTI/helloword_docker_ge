@@ -1,6 +1,12 @@
 # helloword_docker_ge
 Hello World Docker for Study Group Dev
 
+create directories:
+postgres/data
+postgres/backup
+
+nginx/logs
+
 Execute:
 docker-compose up
 
