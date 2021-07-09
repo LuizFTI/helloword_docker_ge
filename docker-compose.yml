@@ -1,0 +1,53 @@
+version: '3'
+services:
+    nginx-ge:
+        container_name: nginx-ge
+        restart: always
+        build:
+            context: ./nginx
+            dockerfile: Dockerfile
+        volumes:
+            - ./src/:/var/www/html
+            - ./nginx/logs/:/var/logs/nginx
+            - ./nginx/sites/:/etc/nginx/conf.d
+        ports:
+            - "8081:80"
+            - "4431:443"
+        links:
+            - php-ge
+        networks:
+            - code-network
+
+    php-ge:
+        container_name: php-ge
+        restart: always
+        build:
+            context: ./php-cli
+            dockerfile: Dockerfile
+        expose:
+            - "9000"
+        volumes:
+            - ./src-php/:/var/www/html
+        networks:
+            - code-network
+        env_file:
+            - .env
+
+    postgres-ge:
+        image: postgres
+        container_name: postgres-ge
+        volumes:
+            - ./postgres/data/:/var/lib/postgresql/data
+            - ./postgres/backup/:/backups
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=gestudo
+        ports:
+            - "25432:5432"
+        networks:
+            - code-network
+
+networks:
+    code-network:
+        driver: bridge
